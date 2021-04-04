@@ -13,6 +13,7 @@ private:
 
     MovementActionForward actionForward;
     MovementActionStop actionStop;
+    MovementActionCurve actionCurve;
 
     bool headingSetted = false;
 
@@ -29,12 +30,17 @@ public:
 
         actionStop.SetDuration(100);
         actionStop.SetWaitForMotorStoped(true);
+
+        actionCurve.UsePID(true);
+        actionCurve.SetTarget(45);
+        actionCurve.SetDegPerSec(4.5);
     }
 
     void Enter(){
         robot->Movement->CancleAllActions();
 
         actionForward.UsePID(false);
+        
         robot->Movement->AddAction(actionForward);
         headingSetted = false;
         timer = 0;
@@ -45,7 +51,7 @@ public:
              actionForward.SetHeading();
              headingSetted = true;
              actionForward.UsePID(true);
-        } 
+        }   
     }
 
     void Exit(){

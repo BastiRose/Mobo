@@ -88,7 +88,10 @@ void UpdateESP(){
 
   Serial2.print('R');
   Serial2.print('|');
-  Serial2.print(0);
+  if(robot.ObjectDetection->HasObjectDetected())
+    Serial2.print(robot.ObjectDetection->GetClosestObject().Distance);
+  else
+    Serial2.print(0);
   Serial2.print('#');
 
   Serial2.print('W');
@@ -132,13 +135,10 @@ void UpdateESP(){
 void CheckSerial(){
   if(Serial2.available()){
     char c = Serial2.read();
-    Serial.println(c);
 
     if(c == '('){
-      delay(5);
         char c = Serial2.read();
-        Serial.println("Command");
-        Serial.println(c);
+
 
       if(c == 'u'){
         espReadyForUpdate = true;

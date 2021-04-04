@@ -158,7 +158,7 @@ protected:
     float dt = 0;
     bool usePID = true;
 
-    float kp = 25;
+    float kp = 28;
     float ki = 18;
 
     unsigned long timer = 0;
@@ -350,7 +350,7 @@ protected:
 
     bool usePID = true;
 
-    float kp = 25;
+    float kp = 28;
     float ki = 18;
 
     unsigned long timer = 0;
@@ -387,6 +387,7 @@ public:
         iOut = 0;
         errorSum= 0;
         dt = 10.0/1000.0;
+        currentTarget = 0;
     }
 
     void Deactivate(){
@@ -408,12 +409,21 @@ public:
         if(millis() - timer > 10){
             timer = millis();
 
-            if(currentTarget < target){
-                currentTarget += degreePerTick;
-            } else {
-                if(currentTarget > target){
-                    currentTarget -= degreePerTick;
+            if(target != 0){
+                if(currentTarget < target){
+                    currentTarget += degreePerTick;
+                } else {
+                    if(currentTarget > target){
+                        currentTarget -= degreePerTick;
+                    }
                 }
+
+                if(abs(imu->GetHeadingError()) >= target){
+                    done = true;
+                }
+
+            } else {
+                currentTarget += degreePerTick;
             }
 
             if(usePID){
@@ -492,8 +502,8 @@ protected:
     int speed = 0;
     int currentSpeed = 0;
 
-    int wantedTarged = 0;
-    int targed = 0;
+    float wantedTarged = 0;
+    float targed = 0;
 
     int8_t dir = 1;
 
@@ -502,14 +512,14 @@ protected:
     float dOut = 0;
     float errorSum = 0;
 
-    float kp = 6;
-    float ki = 1.5;
-    float kd = 0.27;
+    float kp = 14;
+    float ki = 5.5;
+    float kd = 0.5;
 
     float error = 0;
     float lastError = 0;
 
-    float allowedError = 10;
+    float allowedError = 3;
 
     float dt = 0;
 
@@ -569,10 +579,9 @@ protected:
     }
 
     void checkForStuckOrDone(){
-    
-        if((error - lastError) == 0 && (!exact || abs(error) <= allowedError) ){
+        if(abs(error - lastError) < 0.2 && (!exact || abs(error) <= allowedError) ){
             counter++;
-            if(counter >= 50){
+            if(counter >= 100 || (!exact && abs(error) <= allowedError)){
                 done = true; 
                 motorLeft->ChangeSpeed(0);
                 motorRight->ChangeSpeed(0);        
@@ -590,8 +599,8 @@ public:
     }
 
     void SetTargetAngle(int angle){
-        this->targed = 0;
-        this->wantedTarged  = angle;
+        counter = 0;
+        this->wantedTarged = angle;
     }
 
     void EnablePID(bool usePID, bool exact){
@@ -601,6 +610,10 @@ public:
             usePID = false;
             exact = false;
         }
+    }
+
+    void SetHeading(){
+        imu->SetHeading();
     }
 
     void SetDirection(int8_t dir){
@@ -617,15 +630,23 @@ public:
         done = false;
         isActive = true;
         imu->SetHeading();
+
         timer = millis();
 
         iOut= 0;
         pOut = 0;
         dOut = 0;
+
         errorSum = 0;
+
         error = targed; 
+        lastError = 0;
+        dt = 0;
+
         counter = 0;
         targed = 0;
+
+        currentSpeed = 0;
     }
 
     void Deactivate(){
@@ -637,15 +658,15 @@ public:
         if(!isReady || done)
             return;
 
-        if(millis() - timer >= 10 ){
+        if(millis() - timer >= 10){
             
-            if(wantedTarged < targed)
-                targed -= 1;
+            if(wantedTarged * dir < targed)
+                targed -= 0.5;
             else
-                if(wantedTarged > targed)
-                    targed += 1;
+                if(wantedTarged * dir > targed)
+                    targed += 0.5;
 
-            error = (targed * dir) - imu->GetHeadingError(); 
+            error = (targed) - imu->GetHeadingError(); 
             dt = (millis() - timer) / 1000.0;
             timer = millis();
 
@@ -662,7 +683,7 @@ public:
 
     int AngleTurned(){
         if(done)
-           return 0;
+           return targed;
         return (imu->GetHeadingError());
     }
     void ForceDone(){

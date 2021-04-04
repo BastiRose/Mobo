@@ -17,7 +17,9 @@ private:
 
     int8_t direction = 1;
 
-    int8_t startBoundaryError  = 0;
+    int16_t startBoundaryError  = 0;
+
+    unsigned int long timer = 0;
 
     bool wasInside = false;
     bool foundTurningDirection = false;
@@ -32,7 +34,7 @@ public:
         this->robot = &robot;
 
         actionTurn.Setup(255, *this->robot->IMU);
-        actionTurn.EnablePID(false, false);
+        actionTurn.EnablePID(true, false);
     }
 
     void Enter(){
@@ -56,6 +58,7 @@ public:
             robot->Movement->AddAction(actionStop);
 
         robot->Movement->AddAction(actionTurn);
+        startBoundaryError = robot->BoundarySensor->BoundaryError();
     }
 
     void Update(){
@@ -77,42 +80,29 @@ public:
             //If outside of the wire find the fastes direction inside!
             if(!robot->BoundarySensor->IsInside() && !wasInside){
                 
-                if(!foundTurningDirection && abs(actionTurn.AngleTurned()) > 15 && robot->BoundarySensor->BoundaryError() > startBoundaryError){
+                if(!foundTurningDirection && abs(actionTurn.AngleTurned()) > 10 && robot->BoundarySensor->BoundaryError() > startBoundaryError){
                     foundTurningDirection = true;
-                    
-                    robot->Movement->CancleAllActions();
                     direction = direction * -1;
                     actionTurn.SetDirection(direction);
-                    actionTurn.SetTargetAngle(360);
-                    robot->Movement->AddAction(actionTurn);
                 }
-                
             } else {
 
                 //Turn
                 if(!wasInside){
-                    robot->Movement->CancleAllActions();
-                    actionTurn.SetTargetAngle(random(10, 45));
-                    robot->Movement->AddAction(actionTurn);
-                    //robot->Movement->AddAction(actionStop);
+                    actionTurn.SetTargetAngle(abs(actionTurn.AngleTurned()) + random(25, 65));
+                    timer = millis();
+                    lastInside = true;
                 }
 
                 wasInside = true;
 
                 //Prevent to move outside of the wire again
-                if(!robot->BoundarySensor->IsInside() && lastInside && abs(actionTurn.AngleTurned()) > 5){
-                    robot->Movement->CancleAllActions();
+                if(!robot->BoundarySensor->IsInside() && lastInside && ( millis() - timer > 1000)){
                     lastInside = false;
                     direction *= -1;
-                    actionTurn.SetDirection(direction);
-                    actionTurn.SetTargetAngle(random(5,25));
-                    robot->Movement->AddAction(actionTurn);
-                    //robot->Movement->AddAction(actionStop);
                 }
 
-                if(robot->BoundarySensor->IsInside()){
-                    lastInside = true;
-                }
+
             }
         }
 

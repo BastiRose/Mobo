@@ -16,6 +16,8 @@ class RangeObjectDetector : public ObjectDetector{
     private:
         DistanceSensor* sensor;
         unsigned int minDistance = 0;
+        uint8_t count;
+        unsigned long timer = 0;
 
     public:
         void Setup(DistanceSensor& sensor, unsigned int minDistance, int Angle){
@@ -25,8 +27,21 @@ class RangeObjectDetector : public ObjectDetector{
         }
 
         bool Ckeck(){
-            this->Distance = sensor->GetDistance();
-            return this->Distance <= this->minDistance;
+            if(millis() - timer > 250){
+                timer = millis();
+                this->Distance = sensor->GetDistance();
+                if(this->Distance <= this->minDistance)
+                    count++;
+                else 
+                    count = 0;
+
+                if(count >= 2){
+                    count = 2;
+                    return true;
+            }
+            }
+
+            return false;
         }
 };
 
@@ -64,7 +79,7 @@ class MotorCurrentSensing : public ObjectDetector{
                 if(motor->GetSpeed() > 50 && !battery->IsCritical()){
                     if(map(abs(motor->GetSpeed()), 0, motor->GetMaxSpeed(), 10, (((float)triggerMilliAmp) / battery->GetMaxMillivoltage()) * battery->GetMillivoltage()) <= sensor->GetCurrent()){
                         counter++;
-                        if(counter >= 20){
+                        if(counter >= 10){
                             isTriggered = true;
                         }
                         

@@ -20,11 +20,11 @@
             
              
 
-            if(abs(mag) >= abs(((maxMag * 90L) / 100L)) && !wasOverMax){
+            if(abs(mag) >= abs(((maxMag * 80L) / 100L)) && !wasOverMax){
                 wasOverMax = true;
                 isNear = !isNear;
             } else {
-                if(abs(mag) <= abs(((maxMag * 80L) / 100L))){
+                if(abs(mag) <= abs(((maxMag * 70L) / 100L))){
                     wasOverMax = false;
                 }
             }

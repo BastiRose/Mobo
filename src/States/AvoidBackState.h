@@ -25,7 +25,7 @@ public:
         actionBackwards.Setup(255, *this->robot->IMU);
 
         actionTurn.Setup(255, *this->robot->IMU);
-        actionTurn.EnablePID(false, false);
+        actionTurn.EnablePID(true, false);
 
         actionStop.SetDuration(100);
         actionStop.SetWaitForMotorStoped(true);
@@ -43,7 +43,7 @@ public:
     }
 
     void Update(){
-        if(timeInState > 1000 && robot->Movement->IsCurrentAction(actionBackwards))
+        if(timeInState > 1200 && robot->Movement->IsCurrentAction(actionBackwards))
             robot->Movement->CancleCurrentAction();
 
         if(!robot->Movement->HasActionsLeft()){

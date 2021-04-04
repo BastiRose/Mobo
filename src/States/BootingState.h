@@ -29,13 +29,13 @@ public:
         actionBackwards.Setup(255, *this->robot->IMU);
         actionForward.Setup(255, *this->robot->IMU);
 
-        actionTurn.EnablePID(true, false);
+        actionTurn.EnablePID(true, true);
         actionTurn.SetDirection(dir);
         actionTurn.SetTargetAngle(90);
 
         dir = this->robot->BoundarySensor->BoundaryError();
         actionForward.UsePID(true);
-        this->robot->Movement->AddAction(actionTurn);
+        //this->robot->Movement->AddAction(actionTurn);
 
  
     }
@@ -46,13 +46,17 @@ public:
     }
 
     void Update(){
-
+            
+            if(robot->ObjectDetection->HasObjectDetected())
+                Serial.println(robot->ObjectDetection->GetClosestObject().Distance);
 
         if(millis() - timer >= 5000){
 
-           //if(robot->BoundarySensor->IsActive())
-               //this->done = true;
- 
+           if(robot->BoundarySensor->IsActive())
+               this->done = true;
+
+
+
             timer = millis();
             Serial.print("Battery Capacity: [ ");
             Serial.print(robot->Battery->Capacity());
@@ -70,6 +74,7 @@ public:
             Serial.print(robot->BoundarySensor->IsActive());
             Serial.print(" Inside: ");
             Serial.println(robot->BoundarySensor->IsInside());
+            
         }
     }
 

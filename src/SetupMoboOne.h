@@ -157,7 +157,7 @@ void SetupRobot(Robot& robot){
     robot.AddComponent(EmergencyButton);
     
     //Object Detection
-    USDetector.Setup(UsSensor, 15, 0);
+    USDetector.Setup(UsSensor, 30, 0);
     MotorLeftSensing.Setup(Battery, CurrentSensorMotorLeft, MotorLeft, 80);
     MotorRightSensing.Setup(Battery, CurrentSensorMotorRight, MotorRight, 80);
 
@@ -191,7 +191,10 @@ void setupStates(Robot& robot){
     };
 
     auto ConditionToError = [] (Robot& robot) -> bool{
-        return robot.BoundarySensor->TimeOutside() > 10000 || abs(robot.IMU->GetRoll()) > 45 || abs(robot.IMU->GetPitch()) > 45 || robot.MainStateMachine.currentState->timeInState > 120000L;
+        return  robot.BoundarySensor->TimeOutside() > 10000 || 
+                abs(robot.IMU->GetRoll()) > 45 || 
+                abs(robot.IMU->GetPitch()) > 45 || 
+                robot.MainStateMachine.currentState->timeInState > 120000L;
     };
 
     /*Booting*/
@@ -201,11 +204,12 @@ void setupStates(Robot& robot){
 
     /*Cruise*/
     auto ConditionCruiseToAvoidBackCollision = [] (Robot& robot) -> bool{
-        return robot.ObjectDetection->HasObjectDetected() && robot.ObjectDetection->GetClosestObject().Distance < 5;
+        return robot.ObjectDetection->HasObjectDetected() && robot.ObjectDetection->GetClosestObject().Distance < 10;
     };
 
     auto ConditionCruiseToAvoidTurn = [] (Robot& robot) -> bool{
-       return (!robot.BoundarySensor->IsInside());
+       return (!robot.BoundarySensor->IsInside()) ||
+       (robot.ObjectDetection->HasObjectDetected() && (robot.ObjectDetection->GetClosestObject().Distance > 10 && robot.ObjectDetection->GetClosestObject().Distance < 30));
     };
 
     StateTransition CruiseTransitions[] = {
