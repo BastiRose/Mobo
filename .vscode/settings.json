@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "cstddef": "cpp",
+        "cmath": "cpp",
+        "iosfwd": "cpp",
+        "type_traits": "cpp",
+        "xutility": "cpp",
+        "initializer_list": "cpp",
+        "list": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp",
+        "xstring": "cpp"
+    }
+}

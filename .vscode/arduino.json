@@ -1,5 +1,7 @@
 {
+    "sketch": "Mobo.ino",
     "board": "arduino:avr:mega",
     "configuration": "cpu=atmega2560",
-    "programmer": "AVR ISP"
+    "programmer": "AVR ISP",
+    "port": "COM5"
 }
