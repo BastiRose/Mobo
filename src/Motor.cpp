@@ -15,9 +15,7 @@ void Motor::Setup(MotorDriver& motorDriver, int maxSpeed, unsigned int rampTime,
     this->ramp.SetValue(0);
 }
 
-void Motor::Update(){
-    Component::Update();
-    
+void Motor::Update(uint32_t now){
     if(motorDriver->GetSpeed() != ramp.GetTarget())
         motorDriver->ChangeSpeed(ramp.GetValue());
 }

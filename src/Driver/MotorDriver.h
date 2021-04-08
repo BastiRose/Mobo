@@ -7,7 +7,7 @@ class MotorDriver : public Component{
         bool brake = 0;
     public:
         
-        virtual void Update() = 0;
+        virtual void Update(uint32_t now) = 0;
         virtual void ChangeSpeed(const int speed) = 0;
 
         virtual void Brake() = 0;

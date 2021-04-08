@@ -17,9 +17,7 @@ void bts7960::Setup(byte pinA, byte pinB, byte pinPWMA, byte pinPWMB){
 
 }
 
-void bts7960::Update(){
-    Component::Update();
-
+void bts7960::Update(uint32_t now){
     if(speed != tmpSpeed){
         tmpSpeed = speed;
 

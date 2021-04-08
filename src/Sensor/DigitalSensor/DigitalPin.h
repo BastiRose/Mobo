@@ -12,6 +12,6 @@ class DigitalPin : public DigitalSensor
     public:
         void Setup(byte pin, bool activeOn);
         bool IsActive();
-        void Update();
+        void Update(uint32_t now);
 };
 

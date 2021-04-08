@@ -12,10 +12,10 @@ void HC_SR04::Setup(byte echoPin, byte triggerPin, unsigned int intervall, unsig
     pinMode(echo , INPUT);
 }
 
-void HC_SR04::Update(){
-    Component::Update();
-    if(millis() - lastMeasurement > intervall){
-        Measure();
+void HC_SR04::Update(uint32_t now){
+
+    if(now - lastMeasurement > intervall){
+        Measure(now);
     }
 }
 
@@ -23,8 +23,8 @@ unsigned int HC_SR04::GetDistance(){
     return measuredDistance;
 }
 
-int HC_SR04::Measure(){
-    lastMeasurement = millis();
+int HC_SR04::Measure(uint32_t now){
+    lastMeasurement = now;
 
     digitalWrite(trigger, HIGH);
     delayMicroseconds(10);

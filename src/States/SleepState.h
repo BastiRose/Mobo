@@ -5,13 +5,13 @@
 #include "../MovementAction.h"
 
 
-class ErrorState: public State
+class SleepState: public State
 {
 private:
     Robot* robot;
 
 public:
-    ErrorState(char* name): State(name){
+    SleepState(char* name): State(name){
 
     }
 
@@ -20,9 +20,8 @@ public:
     }
 
     void Enter(){
-        Serial.println("ERROR");
+        robot->MowerMotor->SetMowerActive(false);
         robot->Movement->CancleAllActions();
-        robot->MowerMotor->EmergencyStop();
     }
 
     void Update(){

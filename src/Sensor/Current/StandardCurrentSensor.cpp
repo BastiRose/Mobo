@@ -8,10 +8,9 @@ void StandardCurrentSensor::Setup(AnalogSensor& analogSensor, float factor, floa
     this->filter.Setup(filterAlpha, (this->analogSensor->GetValue() * factor));
 }
 
-void StandardCurrentSensor::Update(){
-    Component::Update();
+void StandardCurrentSensor::Update(uint32_t now){
 
-    if(millis() - lastUpdate >= updateInterval){
+    if(now - lastUpdate >= updateInterval){
         lastUpdate = millis();
         filter.Filter((analogSensor->GetValue() * factor) / 100);
     }

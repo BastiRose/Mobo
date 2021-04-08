@@ -24,7 +24,7 @@ class bts7960 : public MotorDriver
     public:
         
         void Setup(byte pinA, byte pinB, byte pwmPinA, byte pwmPinB);
-        void Update();
+        void Update(uint32_t now);
         void ChangeSpeed(const int speed);
 
         void Brake();

@@ -7,8 +7,8 @@ void DigitalPin::Setup(byte pin, bool activeOn){
     pinMode(pin, INPUT);
 }
 
-void DigitalPin::Update(){
-    Component::Update();    
+void DigitalPin::Update(uint32_t now){
+
 }
 
 bool DigitalPin::IsActive(){

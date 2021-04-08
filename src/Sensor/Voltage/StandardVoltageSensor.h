@@ -13,7 +13,7 @@ class StandardVoltageSensor : public VoltageSensor
         unsigned int factor = 0;
     public:
         void Setup(AnalogSensor& analogSenso, float maxVolt, float filterAlpha, unsigned int updateInterval);
-        void Update();
+        void Update(uint32_t now);
         long GetMillivoltage();
 };
 

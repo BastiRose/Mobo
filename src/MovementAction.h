@@ -3,6 +3,7 @@
 #include "Motor.h"
 #include "Helper.h"
 #include "Sensor/IMU/IMU.h"
+#include "Sensor/Boundary/BoundarySensor.h"
 
 class MovementAction{
 protected:
@@ -686,6 +687,137 @@ public:
            return targed;
         return (imu->GetHeadingError());
     }
+    void ForceDone(){
+        done = true;
+    }
+};
+
+class MovementActionFollowBoundary : public MovementAction {
+
+protected:
+    long timer = 0;
+    int maxSpeed = 0;
+
+    int speedL = 0;
+    int speedR = 0;
+
+    float pOut = 0;
+    float iOut = 0;
+    float error = 0;
+    float errorSum = 0;
+
+    int goal = 0;
+
+    float kp = 0.12;
+    float ki = 0.08;
+
+    uint8_t state = 0;
+
+    BoundarySensor* sensor;
+
+public:
+
+    void Setup(unsigned int maxSpeed, BoundarySensor& sensor){
+        this->sensor = &sensor;
+        this->maxSpeed = maxSpeed;
+    }
+
+    void Activate(){
+        done = false;
+        isActive = true;
+        timer = millis();
+
+        goal = 0;
+        errorSum = 0;
+
+        pOut = 0;
+        iOut = 0;
+        errorSum = 0;
+
+        state = 0;
+        speedL = 0;
+        speedR = 0;
+    }
+
+    void Deactivate(){
+        done = true;
+        isActive = false;
+    }
+
+    void Execute(){
+            
+        if(millis() - timer > 10){
+            timer = millis();
+
+            if(sensor->LastTimePassedBoundary() > 2000){
+                ki = 0.15;
+
+                if(sensor->LastTimePassedBoundary() > 3500){
+                    if(sensor->IsInside()){
+                        speedL = -maxSpeed;
+                        speedR = maxSpeed;
+                    } else {
+                        speedL = maxSpeed;
+                        speedR = -maxSpeed;
+                    }
+                    if(motorLeft->GetTargetSpeed() != speedL){
+                        motorLeft->ChangeSpeed(speedL);
+                    }
+
+                    if(motorRight->GetTargetSpeed() != speedR){
+                        motorRight->ChangeSpeed(speedR);
+                    }
+                    return;
+                }
+            } else {
+                ki = 0.08;
+            }
+                error = (goal - sensor->BoundaryError());
+
+                pOut = (error * kp);
+                errorSum += error;
+                iOut =  ki * errorSum * (10.0 / 1000.0);
+                
+                if(iOut < -maxSpeed){
+                    iOut = -maxSpeed;
+                    errorSum = -maxSpeed / (10.0 / 1000.0) / ki;
+                }
+
+                if(iOut > maxSpeed){
+                    iOut = maxSpeed;
+                    errorSum = maxSpeed / (10.0 / 1000.0) / ki;
+                }
+                
+                if(error > 0){
+                    speedL = maxSpeed - (pOut + iOut);
+                    speedR = maxSpeed;
+                } else {
+                    speedL = maxSpeed;
+                    speedR = maxSpeed + (pOut + iOut);
+                }
+
+                if(speedL > maxSpeed)
+                    speedL = maxSpeed;
+
+                if(speedL < -maxSpeed)
+                    speedL = -maxSpeed;
+
+                if(speedR > maxSpeed)
+                    speedR = maxSpeed;
+
+                if(speedR < -maxSpeed)
+                    speedR = -maxSpeed;
+      
+                if(motorLeft->GetTargetSpeed() != speedL){
+                    motorLeft->ChangeSpeed(speedL, 0);
+                }
+
+                if(motorRight->GetTargetSpeed() != speedR){
+                    motorRight->ChangeSpeed(speedR, 0);
+                }
+        } 
+    }
+
     void ForceDone(){
         done = true;
     }

@@ -15,5 +15,5 @@ class AnalogToDigital : public DigitalSensor
     public:
         void Setup(AnalogSensor& analogInput, int threshold,  bool activeHigher);
         bool IsActive();
-        void Update();
+        void Update(uint32_t now);
 };

@@ -97,9 +97,14 @@ public:
                 wasInside = true;
 
                 //Prevent to move outside of the wire again
-                if(!robot->BoundarySensor->IsInside() && lastInside && ( millis() - timer > 1000)){
+                if(!robot->BoundarySensor->IsInside() && lastInside && (millis() - timer > 1000)){
                     lastInside = false;
                     direction *= -1;
+                }
+
+                if(robot->BoundarySensor->IsInside() && !lastInside){
+                    robot->Movement->CancleAllActions();
+                    robot->Movement->AddAction(actionBreak); 
                 }
 
 

@@ -20,7 +20,7 @@ private:
 public:
     void Setup(MotorDriver& motorDriver, int maxSpeed, unsigned int rampTime, unsigned int maxMilliAmp);
 
-    void Update();
+    void Update(uint32_t now);
     void ChangeSpeed(const int speed);
     void ChangeSpeed(const int speed, unsigned long time);
     void Brake();

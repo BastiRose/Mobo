@@ -15,9 +15,8 @@ void RN_VNH2::Setup(byte pinA, byte pinB, byte pinPWM){
     Brake();
 }
 
-void RN_VNH2::Update(){
-    Component::Update();
-    
+void RN_VNH2::Update(uint32_t now){
+
     if(speed != tmpSpeed){
         tmpSpeed = speed;
 

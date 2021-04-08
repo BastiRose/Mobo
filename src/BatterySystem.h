@@ -1,11 +1,14 @@
 #pragma once
 #include <arduino.h>
 #include "Sensor/Voltage/VoltageSensor.h"
+#include "Sensor/DigitalSensor/DigitalSensor.h"
+#include "Component.h"
 
-class BatterySystem
+class BatterySystem: public Component
 {
     private:
         VoltageSensor* sensor;
+        DigitalSensor* chargingSensor;
 
         int full = 0;
         int minToReady = 0;
@@ -13,8 +16,9 @@ class BatterySystem
         int critical = 0;
 
     public:
-        void Setup(VoltageSensor& sensor, int full, int minToReady, int low, int critical){
+        void Setup(VoltageSensor& sensor, DigitalSensor& chargingSensor, int full, int minToReady, int low, int critical){
             this->sensor = &sensor;
+            this->chargingSensor = &chargingSensor;
             this->full = full;
             this->minToReady = minToReady;
             this->low = low;
@@ -61,6 +65,14 @@ class BatterySystem
 
         int GetMaxVoltage(){
             return full * 1000;
+        }
+
+        bool IsCharging(){
+            return chargingSensor->IsActive();
+        }
+
+        void Update(uint32_t now ){
+            
         }
 };
 

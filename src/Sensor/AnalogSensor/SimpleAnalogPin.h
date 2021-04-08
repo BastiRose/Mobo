@@ -11,6 +11,6 @@ class SimpleAnalogPin : public AnalogSensor
         ADCHandler* adcHandler;
     public:
         void Setup(byte pin, ADCHandler& adcHandler, bool calibrate);
-        void Update();
+        void Update(uint32_t now);
         int GetValue();
 };

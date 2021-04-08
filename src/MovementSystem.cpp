@@ -14,15 +14,20 @@ void MovementSystem::popAction(){
 
     actionCount--;
 
-    if(actionCount > 0)
-        actions[0]->Activate();
-    
+    activateCurrentAction();
 
     Serial.print(": ");
     Serial.print(actionCount);
     Serial.print("/");
     Serial.println(maxActions);
 }
+
+ void MovementSystem::activateCurrentAction(){
+    if(actionCount > 0){
+        actions[0]->Activate(); 
+        timeEnterCurrentAction = millis(); 
+    }
+ }
 
 void MovementSystem::Setup(MovementAction& idle, Motor& motorLeft, Motor& motorRight){
     this->idle = &idle;
@@ -31,6 +36,8 @@ void MovementSystem::Setup(MovementAction& idle, Motor& motorLeft, Motor& motorR
 
     this->motorLeft = &motorLeft;
     this->motorRight = &motorRight;
+
+    timeEnterCurrentAction = millis();
 }
 
 void MovementSystem::AddAction(MovementAction& action){
@@ -42,9 +49,10 @@ void MovementSystem::AddAction(MovementAction& action){
     actions[actionCount] = &action;
 
     actions[actionCount]->Init(motorLeft, motorRight);
+    actionCount++;
 
-    if(actionCount == 0){
-        actions[0]->Activate();  
+    if(actionCount == 1){
+        activateCurrentAction();
     }
 
     Serial.print("Added Movement Action ");
@@ -54,7 +62,7 @@ void MovementSystem::AddAction(MovementAction& action){
     Serial.print("/");
     Serial.println(maxActions);
 
-    actionCount++;
+
 }
 
 void MovementSystem::CancleCurrentAction(){
@@ -68,7 +76,8 @@ void MovementSystem::CancleAllActions(){
     actionCount = 0;
 }
 
-void MovementSystem::Update(){
+void MovementSystem::Update(uint32_t now){
+
     if(actionCount > 0){
 
         actions[0]->Execute();
@@ -89,6 +98,10 @@ uint8_t MovementSystem::GetProgress(){
 bool MovementSystem::HasActionsLeft(){
     return actionCount > 0;
 }
+
+ unsigned long MovementSystem::GetTimeInCurrentAction(){
+     return millis() - timeEnterCurrentAction;
+ }
 
 unsigned int MovementSystem::GetCurrentActionID(){
     if(actionCount > 0)

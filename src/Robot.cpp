@@ -16,21 +16,21 @@ void Robot::Setup(State& state){
 }
 
 void Robot::Loop(){
+
     AnalogHandler->Update();
+    Now = millis();
+    while (currentComponent < componentCount){
+
+        if(components[currentComponent]->IsEnabled()){
+            components[currentComponent]->Update(Now);
+        }
+
+        currentComponent++;
+    }
+
+    currentComponent = 0;
+
     MainStateMachine.Run();
-    IMU->Update();
-    Movement->Update();
-    ObjectDetection->Update();
-
-
-    if(components[currentComponent]->IsEnabled())
-        components[currentComponent]->Update();
-
-    currentComponent++;
-
-    if(currentComponent >= componentCount)
-        currentComponent = 0;
-
 }
 
 void Robot::AddComponent(Component& component){

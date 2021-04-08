@@ -15,7 +15,7 @@ class StandardCurrentSensor : public CurrentSensor
 
     public:
         void Setup(AnalogSensor& analogSensor, float factor, float filterAlpha, unsigned int updateInterval);
-        void Update();
+        void Update(uint32_t now);
         unsigned  int GetCurrent();
         unsigned  int GetPower(int voltage);
 

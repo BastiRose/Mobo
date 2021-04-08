@@ -2,6 +2,7 @@
 #include "Sensor/Current/CurrentSensor.h"
 #include "BatterySystem.h"
 #include "Motor.h"
+#include "Component.h"
 
 typedef enum
 {
@@ -9,15 +10,19 @@ typedef enum
     MowerMotor_CCW = -1
 } MowerMotorDirection;
 
-class MowerMotorSystem {
+class MowerMotorSystem: public Component {
 private:
     BatterySystem* batterySystem;
     CurrentSensor* currentSensor;
     Motor* mowerMotor;
     MowerMotorDirection direction = MowerMotor_CW;
 
+    unsigned long beepStart = 0;
+    unsigned int beepTime = 1000;
+
 public:
     void Setup(BatterySystem& batterySystem, CurrentSensor& currentSensor, Motor& mowerMotor);
+    void Update(uint32_t now);
     bool IsInHightGrass();
 
     bool IsMowerActive();
@@ -29,6 +34,8 @@ public:
 
     bool SetDirection(MowerMotorDirection direction);
     bool ChangeDirection();
+
+    void Beep(unsigned int time);
 
 };
 

@@ -38,7 +38,7 @@ private:
 
 public:
     void Setup();
-    void Update();
+    void Update(uint32_t now);
 
     void SetHeading();
     float GetHeadingError();

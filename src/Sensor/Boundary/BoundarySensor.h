@@ -13,5 +13,6 @@ class BoundarySensor : public Component
         virtual int BoundaryError() = 0;
         virtual int BoundaryErrorMax() = 0;
         virtual unsigned long TimeOutside() = 0;
+        virtual unsigned long LastTimePassedBoundary() = 0;
 };
 

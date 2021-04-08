@@ -23,7 +23,7 @@ class RN_VNH2 : public MotorDriver
         
         void Setup(byte pinA, byte pinB, byte pwmPin); 
 
-        void Update();
+        void Update(uint32_t now);
 
         void ChangeSpeed(const int speed);
 

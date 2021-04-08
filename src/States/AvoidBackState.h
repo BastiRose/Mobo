@@ -33,7 +33,7 @@ public:
 
     void Enter(){
         actionTurn.SetDirection(0);
-        actionTurn.SetTargetAngle(random(45, 180));
+        actionTurn.SetTargetAngle(random(45, 120));
 
         robot->Movement->CancleAllActions();
         robot->Movement->AddAction(actionStop);
@@ -43,7 +43,7 @@ public:
     }
 
     void Update(){
-        if(timeInState > 1200 && robot->Movement->IsCurrentAction(actionBackwards))
+        if(timeInState > 1500 && robot->Movement->IsCurrentAction(actionBackwards))
             robot->Movement->CancleCurrentAction();
 
         if(!robot->Movement->HasActionsLeft()){

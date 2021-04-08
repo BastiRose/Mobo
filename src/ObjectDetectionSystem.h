@@ -1,7 +1,9 @@
 #pragma once
+
 #include "Sensor/Distance/DistanceSensor.h"
 #include "Sensor/Current/CurrentSensor.h"
 #include <arduino.h>
+#include "Component.h"
 
 class ObjectDetector{
 
@@ -34,11 +36,11 @@ class RangeObjectDetector : public ObjectDetector{
                     count++;
                 else 
                     count = 0;
-
-                if(count >= 2){
-                    count = 2;
-                    return true;
             }
+
+            if(count >= 3){
+                count = 3;
+                return true;
             }
 
             return false;
@@ -93,7 +95,7 @@ class MotorCurrentSensing : public ObjectDetector{
         }
 };
 
-class ObjectDetectionSystem {
+class ObjectDetectionSystem: public Component{
 private:
     
     ObjectDetector* detectors[3];
@@ -124,8 +126,7 @@ public:
         detectorCount++;
     }
 
-    void Update(){
-
+    void Update(uint32_t now){
         hasObjectDetected = false;
         
         for(currentDetector = 0; currentDetector < detectorCount; currentDetector++){

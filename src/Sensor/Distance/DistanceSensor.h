@@ -7,7 +7,7 @@
 class DistanceSensor : public Component
 {
     public:
-        virtual void Update() = 0;
+        virtual void Update(uint32_t now) = 0;
         virtual unsigned int GetDistance() = 0;
 };
 

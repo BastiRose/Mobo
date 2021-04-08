@@ -11,16 +11,17 @@
         timer2 = micros();
     }
 
-    void GY80::Update(){
-        if(micros() - timer1 >= 10000) {
-            timer1 = micros();
+    void GY80::Update(uint32_t now){
+        unsigned long mic = micros();
+        if(mic - timer1 >= 10000) {
+            timer1 = mic;
             gyro.UpdateValues();
             acc.UpdateValues();
 
             if(gyro.HasNewValues() && acc.HasNewValues()){
 
-                dt = (float)(micros() - timer2) / 1000000L;
-                timer2 = micros();
+                dt = (float)(mic - timer2) / 1000000L;
+                timer2 = mic;
 
                 gyro.GetDPSXYZ(gx,gy,gz);
                 acc.GetGXYZ(ax,ay,az);

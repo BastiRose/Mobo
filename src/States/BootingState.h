@@ -3,20 +3,23 @@
 #include <State.h>
 
 #include "../MovementAction.h"
+#include "../Tasks.h"
 
-class Robot;
 
 class BootingState: public State
 {
 private:
     Robot* robot;
-    MovementActionTurnOnPoint actionTurn;
-    MovementActionBackwards actionBackwards;
-    MovementActionForward actionForward;
 
-    int dir = 1;
+
+    TaskMow taskMow;
+    TaskGoHome taskGoHome;
+    TaskMowBoundary taskMowBoundary;
+ 
+
 
     unsigned long timer;
+    uint8_t counter = 0;
 
 public:
     BootingState(char* name): State(name){
@@ -25,35 +28,35 @@ public:
 
     void Setup(Robot& robot){
         this->robot = &robot;
-        actionTurn.Setup(255, *this->robot->IMU);
-        actionBackwards.Setup(255, *this->robot->IMU);
-        actionForward.Setup(255, *this->robot->IMU);
-
-        actionTurn.EnablePID(true, true);
-        actionTurn.SetDirection(dir);
-        actionTurn.SetTargetAngle(90);
-
-        dir = this->robot->BoundarySensor->BoundaryError();
-        actionForward.UsePID(true);
-        //this->robot->Movement->AddAction(actionTurn);
-
- 
+        taskMowBoundary.Setup(*this->robot->IMU);
     }
 
     void Enter(){
         timer = millis();
         Serial.println("Booting...");
+        counter = 0;
+        
     }
 
     void Update(){
+
+        if(millis() - timer >= 1000L * counter){
+            counter++;
+            robot->MowerMotor->Beep(500);        
+        }
             
-            if(robot->ObjectDetection->HasObjectDetected())
-                Serial.println(robot->ObjectDetection->GetClosestObject().Distance);
 
         if(millis() - timer >= 5000){
-
-           if(robot->BoundarySensor->IsActive())
+             counter = 0;
+            if(robot->BoundarySensor->IsActive()){
                this->done = true;
+
+                if(!robot->Battery->IsCharging()){
+                    robot->Tasks->AddTask(taskMowBoundary);
+                    taskMow.Setup(0);
+                    robot->Tasks->AddTask(taskMow);
+                }
+            }
 
 
 
@@ -74,6 +77,11 @@ public:
             Serial.print(robot->BoundarySensor->IsActive());
             Serial.print(" Inside: ");
             Serial.println(robot->BoundarySensor->IsInside());
+
+            Serial.print("Task: Type: ");
+            Serial.print((int)robot->Tasks->GetCurrentTaskType());
+            Serial.print(" Done: ");
+            Serial.println(!robot->Tasks->IsCurrentTask(TaskMow::Type));
             
         }
     }

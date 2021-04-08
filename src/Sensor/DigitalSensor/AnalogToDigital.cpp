@@ -7,8 +7,8 @@ void AnalogToDigital::Setup(AnalogSensor& analogSensor, int threshold, bool acti
     this->activeHigher = activeHigher;
 }
 
-void AnalogToDigital::Update(){
-    Component::Update();
+void AnalogToDigital::Update(uint32_t now){
+
 }
 
 bool AnalogToDigital::IsActive(){

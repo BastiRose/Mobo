@@ -18,8 +18,8 @@ private:
 
 public:
     void Setup(byte echo, byte trigger, unsigned int intervall, unsigned int timeout);
-    void Update();
+    void Update(uint32_t now);
     unsigned int GetDistance();
-    int Measure();
+    int Measure(uint32_t now);
 
 };

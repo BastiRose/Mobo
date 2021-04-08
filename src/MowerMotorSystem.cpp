@@ -8,12 +8,18 @@ void MowerMotorSystem::Setup(BatterySystem& batterySystem, CurrentSensor& curren
     this->mowerMotor->Brake();
 }
 
+void MowerMotorSystem::Update(uint32_t now){
+    if(now - beepStart >= beepTime && !IsMowerActive()) {
+        mowerMotor->ChangeSpeed(0);
+    }
+}
+
 bool MowerMotorSystem::IsInHightGrass(){
 
 }
 
 bool MowerMotorSystem::IsMowerActive(){
-     return this->mowerMotor->GetTargetSpeed() > 0;
+     return abs(this->mowerMotor->GetTargetSpeed()) == this->mowerMotor->GetMaxSpeed();
 }
 
   bool MowerMotorSystem::IsMowerReady(){
@@ -49,4 +55,12 @@ bool MowerMotorSystem::ChangeDirection(){
     else
         SetDirection(MowerMotor_CW);
 
+}
+
+void MowerMotorSystem::Beep(unsigned int time){
+    if(!IsMowerActive()){
+        beepTime = time;
+        this->mowerMotor->ChangeSpeed(10);
+        beepStart = millis();
+    }
 }

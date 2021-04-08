@@ -10,10 +10,9 @@ void StandardVoltageSensor::Setup(AnalogSensor& analogSensor, float maxVolt, flo
     this->filter.Setup(filterAlpha, ((this->analogSensor->GetValue() * factor) / 100));
 }
 
-void StandardVoltageSensor::Update(){
-    Component::Update();
+void StandardVoltageSensor::Update(uint32_t now){
     
-    if(millis() - lastUpdate >= updateInterval){
+    if(now - lastUpdate >= updateInterval){
         lastUpdate = millis();
         filter.Filter(((this->analogSensor->GetValue() * factor)));
     }

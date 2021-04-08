@@ -15,6 +15,7 @@
 #include "Sensor/IMU/IMU.h"
 #include "Sensor/Boundary/BoundarySensor.h"
 #include "MowerMotorSystem.h"
+#include "TaskManager.h"
 
 class State;
 
@@ -24,10 +25,18 @@ class Robot
 
     byte componentCount = 0; 
     byte currentComponent = 0; 
-    const byte maxComponents = 16; 
-    Component* components[16];
+    const byte maxComponents = 22; 
+    Component* components[22];
 
+    byte currentLowPrioComponent = 0;
+    bool lowPrioUpdated = false;
+    
     public:
+
+        unsigned long Now = 0;
+
+        unsigned int stateUpdates = 0;
+
         Robot();
         StateMachine MainStateMachine;
 
@@ -38,6 +47,7 @@ class Robot
         BoundarySensor* BoundarySensor;
         IMU* IMU;
         MowerMotorSystem* MowerMotor;
+        TaskManager* Tasks;
         
 
 

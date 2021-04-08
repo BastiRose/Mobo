@@ -5,20 +5,18 @@
         sensor.speedTest();
         wireOffTimer = millis();
         outsideTimer = millis();
+        lastTimePassedBoundar = millis();
     }
 
-    void WireSensor::Update(){
-        Component::Update();
+    void WireSensor::Update(uint32_t Now){
 
-        if(millis() - magUpdateTimer >= 50){
-            magUpdateTimer = millis();
+        if(Now - magUpdateTimer >= 50){
+            magUpdateTimer = Now;
             mag = sensor.getMagnitude(0); 
             if(maxMag < abs(mag)){
                 maxMag = abs(mag); 
                 calibrated = false;
             }
-            
-             
 
             if(abs(mag) >= abs(((maxMag * 80L) / 100L)) && !wasOverMax){
                 wasOverMax = true;
@@ -29,11 +27,19 @@
                 }
             }
 
-            if(IsInside()){
+            isInside = sensor.isInside(0) && IsActive();
+
+            if(isInside){
                 isNear = true;
                 wasOverMax = false;
                 outsideTimer = millis();
             }
+
+            if(lastInside != isInside){
+                lastTimePassedBoundar = millis();
+            }
+
+            lastInside = isInside;
         }
     }
 
@@ -55,7 +61,7 @@
 
     bool WireSensor::IsInside(){
   
-        if(sensor.isInside(0) && IsActive()){
+        if(isInside){
             return true;
         }
 
@@ -79,5 +85,12 @@
     }
 
     unsigned long WireSensor::TimeOutside(){
-        return millis() - outsideTimer;
+        if(!isInside)
+            return millis() - lastTimePassedBoundar;
+        
+        return 0;
+    }
+
+    unsigned long WireSensor::LastTimePassedBoundary(){
+        return millis() - lastTimePassedBoundar;
     }

@@ -10,6 +10,8 @@ class WireSensor : public BoundarySensor{
 
         unsigned long outsideTimer = 0;
 
+         unsigned long lastTimePassedBoundar = 0;
+
         int mag = 0;
         int maxMag = 0;
 
@@ -20,10 +22,13 @@ class WireSensor : public BoundarySensor{
 
         bool wireActive = false;
 
+        bool isInside = false;
+        bool lastInside = false;
+
     public:
         void Setup(byte pin);
 
-        void Update();
+        void Update(uint32_t now);
 
         bool IsActive();
         bool IsInside();
@@ -31,5 +36,6 @@ class WireSensor : public BoundarySensor{
         int BoundaryError();
         int BoundaryErrorMax();
         unsigned long TimeOutside();
+        unsigned long LastTimePassedBoundary();
 };
 

@@ -8,8 +8,8 @@ void SimpleAnalogPin::Setup(byte pin, ADCHandler& adcHandler, bool calibrate){
     this->adcHandler->SetCapture(pin, 1, calibrate);
 }
 
-void SimpleAnalogPin::Update(){
-    Component::Update();
+void SimpleAnalogPin::Update(uint32_t now){
+
 }
 
 int SimpleAnalogPin::GetValue(){
