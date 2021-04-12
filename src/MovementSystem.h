@@ -12,7 +12,7 @@ class MovementSystem: public Component{
 
         MovementAction* idle;
 
-        unsigned long timeEnterCurrentAction = 0;
+        unsigned long timeEnteredCurrentAction = 0;
 
         Motor* motorLeft;
         Motor* motorRight;

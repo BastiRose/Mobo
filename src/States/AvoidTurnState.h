@@ -25,6 +25,10 @@ private:
     bool foundTurningDirection = false;
 
     bool lastInside = false;
+
+    float lastAngleTurned = 0;
+
+    uint8_t tries = 0;
 public:
     AvoidTurnState(char* name): State(name){
         
@@ -52,13 +56,18 @@ public:
 
         actionBreak.SetDuration(500);
 
-        if(!robot->BoundarySensor->IsInside())
+        if(!robot->BoundarySensor->IsInside()){
             robot->Movement->AddAction(actionBreak);
-        else
+        } else{
             robot->Movement->AddAction(actionStop);
+        }
 
         robot->Movement->AddAction(actionTurn);
         startBoundaryError = robot->BoundarySensor->BoundaryError();
+        lastAngleTurned = 0;
+
+        timer = millis();
+        tries = 0;
     }
 
     void Update(){
@@ -89,26 +98,38 @@ public:
 
                 //Turn
                 if(!wasInside){
-                    actionTurn.SetTargetAngle(abs(actionTurn.AngleTurned()) + random(25, 65));
-                    timer = millis();
+                    actionTurn.SetTargetAngle(abs(actionTurn.AngleTurned()) + random(30,91));
                     lastInside = true;
                 }
 
                 wasInside = true;
 
                 //Prevent to move outside of the wire again
-                if(!robot->BoundarySensor->IsInside() && lastInside && (millis() - timer > 1000)){
+                if(!robot->BoundarySensor->IsInside() && lastInside && robot->Movement->GetTimeInCurrentAction() > 1000){
                     lastInside = false;
                     direction *= -1;
                 }
 
-                if(robot->BoundarySensor->IsInside() && !lastInside){
+                if(robot->BoundarySensor->IsInside() && !lastInside && robot->Movement->GetTimeInCurrentAction() > 500){
                     robot->Movement->CancleAllActions();
                     robot->Movement->AddAction(actionBreak); 
                 }
-
-
             }
+        }
+
+        if(millis() - timer > 2000){
+            if(abs(lastAngleTurned  - actionTurn.AngleTurned()) < 2){
+                tries++;
+                direction *= -1;
+            }
+            
+            lastAngleTurned = actionTurn.AngleTurned();
+
+            if(tries >= 2){
+                failed = true;
+            }
+
+            timer = millis();
         }
 
         if(!robot->Movement->HasActionsLeft()){
