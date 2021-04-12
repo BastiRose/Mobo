@@ -159,8 +159,8 @@ protected:
     float dt = 0;
     bool usePID = true;
 
-    float kp = 28;
-    float ki = 18;
+    float kp = 30;
+    float ki = 20;
 
     unsigned long timer = 0;
 
@@ -176,6 +176,9 @@ public:
         this->maxSpeed = speed;
     }
 
+    float GetError(){
+        return (pOut + iOut);
+    }
     void Activate(){
         done = false;
         isActive = true;
@@ -342,7 +345,6 @@ protected:
     float currentTarget = 0;
     float degreePerTick = 0;
 
-
     float pOut = 0;
     float iOut = 0;
     float error = 0;
@@ -351,10 +353,12 @@ protected:
 
     bool usePID = true;
 
-    float kp = 28;
-    float ki = 18;
+    float kp = 5;
+    float ki = 1;
 
     unsigned long timer = 0;
+
+    int8_t dir;
 
     IMU* imu;
 
@@ -364,7 +368,7 @@ public:
         this->imu = &imu;
     }
 
-    void SetTarget(int target){
+    void SetTarget(unsigned int target){
         this->target = target;
     }
 
@@ -374,6 +378,16 @@ public:
 
     void ChangeSpeed(int speed){
         this->maxSpeed = speed;
+    }
+
+    void SetDir(int8_t dir){
+        if(dir == 0){
+            if(random(0, 2) == 0)
+                dir = 1;
+            else 
+                dir = -1;
+        }
+        this->dir = dir;
     }
 
     void Activate(){
@@ -419,7 +433,7 @@ public:
                     }
                 }
 
-                if(abs(imu->GetHeadingError()) >= target){
+                if(abs(imu->GetHeadingError()) >= abs(target)){
                     done = true;
                 }
 
@@ -427,11 +441,12 @@ public:
                 currentTarget += degreePerTick;
             }
 
-            if(usePID){
+            
 
-                error = (currentTarget - imu->GetHeadingError());  
-
-                pOut = (error * kp);
+            error = (currentTarget * dir) - imu->GetHeadingError();
+            pOut = (error* kp);
+          
+               
                 errorSum += error;
                 iOut =  ki * errorSum * dt;
 
@@ -447,12 +462,13 @@ public:
                     errorSum = speed / dt / ki;
                 }
                 
-                if(imu->GetHeadingError() > 0){
-                    speedL = maxSpeed - (pOut + iOut);
+                if(error <= 0){
+                   
+                    speedL = maxSpeed + (pOut + iOut);
                     speedR = maxSpeed;
                 } else {
                     speedL = maxSpeed;
-                    speedR = maxSpeed + (pOut + iOut);
+                    speedR = maxSpeed - (pOut + iOut);
                 }
 
                 if(speedL > maxSpeed)
@@ -474,19 +490,6 @@ public:
                 if(motorRight->GetTargetSpeed() != speedR){
                     motorRight->ChangeSpeed(speedR, 0);
                 }
-
-            } else {
-                speedL = maxSpeed;
-                speedR = maxSpeed;
-
-                if(motorLeft->GetTargetSpeed() != speedL){
-                    motorLeft->ChangeSpeed(speedL);
-                }
-
-                if(motorRight->GetTargetSpeed() != speedR){
-                    motorRight->ChangeSpeed(speedR);
-                }
-            }
         }
     }
 
@@ -634,7 +637,7 @@ public:
 
         timer = millis();
 
-        iOut= 0;
+        iOut = 0;
         pOut = 0;
         dOut = 0;
 

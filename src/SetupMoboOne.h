@@ -52,6 +52,7 @@
 #include "MowerMotorSystem.h"
 
 #include "TaskManager.h"
+#include "Tasks.h"
 
 BootingState MoboBootingState("Booting");
 CruiseState MoboCruiseState("Cruise");
@@ -106,6 +107,7 @@ MovementSystem Movement;
 MovementActionBreak Idle;
 
 TaskManager Tasks;
+TaskPause DefaultTask;
 
 void setupStates(Robot& robot);
 
@@ -114,15 +116,17 @@ void SetupRobot(Robot& robot){
     
     AnalogHandler.Setup();
 
+    int seed = analogRead(A14);
+    randomSeed(seed);
 
     Wire.setClock(400000);
     Wire.begin();
 
     //Motor Left
     MotorLeftCurrentPin.Setup(A1, AnalogHandler, true);
-    CurrentSensorMotorLeft.Setup(MotorLeftCurrentPin,7.58f, 0.80, 250);
+    CurrentSensorMotorLeft.Setup(MotorLeftCurrentPin,7.58f, 0.85, 250);
     MotorDriverLeft.Setup(22,23,9);
-    MotorLeft.Setup(MotorDriverLeft, 255, 1000, 1200);
+    MotorLeft.Setup(MotorDriverLeft, 255, 1000, 1800);
 
     robot.AddComponent(MotorLeftCurrentPin);
     robot.AddComponent(CurrentSensorMotorLeft);
@@ -131,9 +135,9 @@ void SetupRobot(Robot& robot){
 
     //Motor Right
     MotorRightCurrentPin.Setup(A0, AnalogHandler, true);
-    CurrentSensorMotorRight.Setup(MotorRightCurrentPin, 7.58f, 0.80, 250);
+    CurrentSensorMotorRight.Setup(MotorRightCurrentPin, 7.58f, 0.85, 250);
     MotorDriverRight.Setup(24,25,10);
-    MotorRight.Setup(MotorDriverRight, 255, 1000, 1200);
+    MotorRight.Setup(MotorDriverRight, 255, 1000, 1400);
 
     robot.AddComponent(MotorRightCurrentPin);
     robot.AddComponent(CurrentSensorMotorRight);
@@ -167,18 +171,18 @@ void SetupRobot(Robot& robot){
     robot.AddComponent(BattPin);
     robot.AddComponent(LipoVoltageSensor);
 
-    Battery.Setup(LipoVoltageSensor, ChargingContact, 12600, 11500, 11000, 10500);
+    Battery.Setup(LipoVoltageSensor, ChargingContact, 12600, 12000, 11000, 9600);
     robot.AddComponent(Battery);
 
     //Digital
-    ChargingContact.Setup(27, HIGH);
+    ChargingContact.Setup(27, 10, HIGH);
     EmergencyButton.Setup(BattPin, 500, false);
 
     robot.AddComponent(ChargingContact);
     robot.AddComponent(EmergencyButton);
     
     //Object Detection
-    USDetector.Setup(UsSensor, 30, 0);
+    USDetector.Setup(UsSensor, 45, 0);
     MotorLeftSensing.Setup(Battery, CurrentSensorMotorLeft, MotorLeft, 80);
     MotorRightSensing.Setup(Battery, CurrentSensorMotorRight, MotorRight, 80);
 
@@ -197,6 +201,7 @@ void SetupRobot(Robot& robot){
     WireBoundarySensor.Setup(A9);
     robot.AddComponent(WireBoundarySensor);
 
+    Tasks.Setup(DefaultTask);
     robot.AddComponent(Tasks);
 
     //Assign Components to Robot
@@ -222,7 +227,7 @@ void setupStates(Robot& robot){
 
     auto ConditionToError = [] (Robot& robot) -> bool{
         return  (
-                   robot.Battery->IsCritical() ||
+                    robot.Battery->IsCritical() ||
                     abs(robot.IMU->GetRoll()) > 45 || 
                     abs(robot.IMU->GetPitch()) > 45 || 
                     robot.MainStateMachine.currentState->timeInState > 120000L ||
@@ -240,9 +245,16 @@ void setupStates(Robot& robot){
     #--------------------Booting--------------------#
     #################################################
     */
-    StateTransition BootingTransitions[] = {
-        {&MoboSleepState, ConditionStateDone}
+    auto ConditionBootingToError = [] (Robot& robot) -> bool{
+        return !robot.Battery->IsCharging() && !robot.BoundarySensor->IsInside() && robot.MainStateMachine.currentState->timeInState > 5000;
     };
+
+    StateTransition BootingTransitions[] = {
+        {&MoboSleepState, ConditionStateDone},
+        {&MoboErrorState, ConditionBootingToError}
+    };
+
+
 
     MoboBootingState.SetTransitions(BootingTransitions, sizeofArray(BootingTransitions)); 
     MoboBootingState.Setup(robot);
@@ -253,18 +265,18 @@ void setupStates(Robot& robot){
     #################################################
     */
     auto ConditionCruiseToAvoidBackCollision = [] (Robot& robot) -> bool{
-        return robot.ObjectDetection->HasObjectDetected() && robot.ObjectDetection->GetClosestObject().Distance < 5;
+        return robot.MainStateMachine.currentState->done || (robot.ObjectDetection->HasObjectDetected() && robot.ObjectDetection->GetClosestObject().Distance < 5);
     };
 
     auto ConditionCruiseToAvoidTurn = [] (Robot& robot) -> bool{
        return (!robot.BoundarySensor->IsInside()) ||
-        (robot.ObjectDetection->HasObjectDetected() && (robot.ObjectDetection->GetClosestObject().Distance >= 5 && 
-        robot.ObjectDetection->GetClosestObject().Distance < 30));
+        (robot.ObjectDetection->HasObjectDetected() && (robot.ObjectDetection->GetClosestObject().Distance >= 10 && 
+        robot.ObjectDetection->GetClosestObject().Distance < 35));
     };
 
     auto ConditionCruiseToFollowBoundary = [] (Robot& robot) -> bool{
         return (
-            robot.Battery->IsLow() || 
+            robot.Battery->NeedCharging() || 
             robot.Tasks->IsCurrentTask(TaskMowBoundary::Type) || 
             robot.Tasks->IsCurrentTask(TaskGoHome::Type)
         ) && 
@@ -310,8 +322,8 @@ void setupStates(Robot& robot){
     #################################################
     */
     auto ConditionAvoidTurnToAvoidBack = [] (Robot& robot) -> bool{
-        return (robot.ObjectDetection->HasObjectDetected() && robot.ObjectDetection->GetClosestObject().Distance < 5) ||
-            (!robot.BoundarySensor->IsInside() && robot.MainStateMachine.currentState->done);
+        return (robot.ObjectDetection->HasObjectDetected() && robot.ObjectDetection->GetClosestObject().Distance <= 1) ||
+            (!robot.BoundarySensor->IsInside() && robot.MainStateMachine.currentState->done) || (robot.MainStateMachine.currentState->failed);
     };
 
     StateTransition AvoidTurnTransitions[] = {
@@ -339,7 +351,8 @@ void setupStates(Robot& robot){
     auto ConditionFollowBoundaryToCruse = [] (Robot& robot) -> bool{
         return  (
                     !robot.Tasks->IsCurrentTask(TaskMowBoundary::Type) &&
-                    !robot.Tasks->IsCurrentTask(TaskGoHome::Type)
+                    !robot.Tasks->IsCurrentTask(TaskGoHome::Type) &&
+                    !robot.Battery->NeedCharging()
                 );
     };
 
@@ -365,8 +378,18 @@ void setupStates(Robot& robot){
     #--------------------Docking--------------------#
     #################################################
     */
+    auto ConditionNotInDockInBoundary = [] (Robot& robot) -> bool{
+        return  !robot.Battery->IsCharging() && robot.BoundarySensor->IsInside();
+    };
+
+    auto ConditionNotInDockNotInBoundary = [] (Robot& robot) -> bool{
+        return !robot.Battery->IsCharging() && !robot.BoundarySensor->IsInside();
+    };
+
     StateTransition DockingTransitions[] = {
         {&MoboErrorState, ConditionToError},
+        {&MoboCruiseState, ConditionNotInDockInBoundary },
+        {&MoboFollowBoundaryState,ConditionNotInDockNotInBoundary},
         {&MoboSleepState, ConditionStateDone}
     };
 
@@ -394,19 +417,24 @@ void setupStates(Robot& robot){
     auto ConditionTaskAndInDock = [] (Robot& robot) -> bool{
         return  (robot.Tasks->IsCurrentTask(TaskMow::Type) || 
                 robot.Tasks->IsCurrentTask(TaskMowBoundary::Type)) && 
-                robot.Battery->IsCharging();
+                robot.Battery->IsCharging() && !Battery.NeedCharging();
     };
 
     auto ConditionTaskAndNotInDock = [] (Robot& robot) -> bool{
         return  (robot.Tasks->IsCurrentTask(TaskMow::Type) || 
-                robot.Tasks->IsCurrentTask(TaskMowBoundary::Type) ||
-                robot.Tasks->IsCurrentTask(TaskGoHome::Type)) && 
+                robot.Tasks->IsCurrentTask(TaskMowBoundary::Type)) && 
+                !robot.Battery->IsCharging();
+    };
+
+    auto ConditionTaskAndNotInDockGoHome = [] (Robot& robot) -> bool{
+        return  robot.Tasks->IsCurrentTask(TaskGoHome::Type) && 
                 !robot.Battery->IsCharging();
     };
 
     StateTransition SleepTransitions[] = {
         {&MoboExitDockState, ConditionTaskAndInDock},
-        {&MoboPrepareMowingState, ConditionTaskAndNotInDock}
+        {&MoboPrepareMowingState, ConditionTaskAndNotInDock},
+        {&MoboCruiseState, ConditionTaskAndNotInDockGoHome},
     };
 
     MoboSleepState.SetTransitions(SleepTransitions, sizeofArray(SleepTransitions));

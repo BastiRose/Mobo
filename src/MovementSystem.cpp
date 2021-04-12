@@ -25,7 +25,7 @@ void MovementSystem::popAction(){
  void MovementSystem::activateCurrentAction(){
     if(actionCount > 0){
         actions[0]->Activate(); 
-        timeEnterCurrentAction = millis(); 
+        timeEnteredCurrentAction = millis(); 
     }
  }
 
@@ -37,7 +37,7 @@ void MovementSystem::Setup(MovementAction& idle, Motor& motorLeft, Motor& motorR
     this->motorLeft = &motorLeft;
     this->motorRight = &motorRight;
 
-    timeEnterCurrentAction = millis();
+    timeEnteredCurrentAction = millis();
 }
 
 void MovementSystem::AddAction(MovementAction& action){
@@ -100,7 +100,7 @@ bool MovementSystem::HasActionsLeft(){
 }
 
  unsigned long MovementSystem::GetTimeInCurrentAction(){
-     return millis() - timeEnterCurrentAction;
+     return millis() - timeEnteredCurrentAction;
  }
 
 unsigned int MovementSystem::GetCurrentActionID(){

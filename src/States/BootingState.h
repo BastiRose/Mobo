@@ -15,8 +15,6 @@ private:
     TaskMow taskMow;
     TaskGoHome taskGoHome;
     TaskMowBoundary taskMowBoundary;
- 
-
 
     unsigned long timer;
     uint8_t counter = 0;
@@ -35,16 +33,10 @@ public:
         timer = millis();
         Serial.println("Booting...");
         counter = 0;
-        
     }
 
     void Update(){
 
-        if(millis() - timer >= 1000L * counter){
-            counter++;
-            robot->MowerMotor->Beep(500);        
-        }
-            
 
         if(millis() - timer >= 5000){
              counter = 0;
@@ -52,8 +44,8 @@ public:
                this->done = true;
 
                 if(!robot->Battery->IsCharging()){
-                    robot->Tasks->AddTask(taskMowBoundary);
-                    taskMow.Setup(0);
+                    //robot->Tasks->AddTask(taskMowBoundary);
+                    taskMow.Setup(0, *robot->Battery);
                     robot->Tasks->AddTask(taskMow);
                 }
             }

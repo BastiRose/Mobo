@@ -38,8 +38,8 @@ class RangeObjectDetector : public ObjectDetector{
                     count = 0;
             }
 
-            if(count >= 3){
-                count = 3;
+            if(count >= 2){
+                count = 2;
                 return true;
             }
 
@@ -83,6 +83,7 @@ class MotorCurrentSensing : public ObjectDetector{
                         counter++;
                         if(counter >= 10){
                             isTriggered = true;
+                            Serial.println("Trigger");
                         }
                         
                     } else {

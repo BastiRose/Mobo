@@ -33,7 +33,8 @@ public:
     unsigned int GetMowerAmper();
 
     bool SetDirection(MowerMotorDirection direction);
-    bool ChangeDirection();
+    void ChangeDirection();
+    MowerMotorDirection GetDirection();
 
     void Beep(unsigned int time);
 

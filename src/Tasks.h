@@ -1,5 +1,6 @@
 #pragma once
 #include "Sensor/IMU/IMU.h"
+#include "BatterySystem.h"
 
 typedef enum
 {  
@@ -28,11 +29,13 @@ class TaskMow : public Task
     private:
         unsigned long startTime = 0;
         unsigned long duration = 0;
+        BatterySystem* battery;
     public:
         static const task_type_t Type = Task_Mow;
 
-        void Setup(unsigned long duration){
+        void Setup(unsigned long duration, BatterySystem &battery){
             this->duration = duration; 
+            this->battery = &battery;
         }
 
         void Start(){
@@ -45,7 +48,7 @@ class TaskMow : public Task
 
         bool Check(){
             if(duration == 0)
-                return false;
+                return battery->NeedCharging();
 
             return millis() - startTime >= duration;
         }
@@ -156,7 +159,7 @@ class TaskStop : public Task
     private:
 
     public:
-        static const task_type_t Type = Task_Sleep;
+        static const task_type_t Type = Task_Stop;
 
         void Setup(){
 

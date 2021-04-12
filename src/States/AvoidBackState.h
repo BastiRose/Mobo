@@ -39,11 +39,11 @@ public:
         robot->Movement->AddAction(actionStop);
         robot->Movement->AddAction(actionBackwards);
         robot->Movement->AddAction(actionTurn);
-        robot->Movement->AddAction(actionStop);
+        //robot->Movement->AddAction(actionStop);
     }
 
     void Update(){
-        if(timeInState > 1500 && robot->Movement->IsCurrentAction(actionBackwards))
+        if(robot->Movement->GetTimeInCurrentAction() > 1000 && robot->Movement->IsCurrentAction(actionBackwards))
             robot->Movement->CancleCurrentAction();
 
         if(!robot->Movement->HasActionsLeft()){

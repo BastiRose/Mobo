@@ -9,6 +9,7 @@ class ErrorState: public State
 {
 private:
     Robot* robot;
+    MovementActionForward forwad;
 
 public:
     ErrorState(char* name): State(name){
@@ -17,15 +18,18 @@ public:
 
     void Setup(Robot& robot){
         this->robot = &robot;
+        forwad.Setup(255, *robot.IMU);
     }
 
     void Enter(){
         Serial.println("ERROR");
         robot->Movement->CancleAllActions();
         robot->MowerMotor->EmergencyStop();
+        //robot->Movement->AddAction(forwad);
     }
 
     void Update(){
+
 
     }
 

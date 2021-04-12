@@ -18,6 +18,6 @@ void StandardVoltageSensor::Update(uint32_t now){
     }
 }
 
-long StandardVoltageSensor::GetMillivoltage(){
+long StandardVoltageSensor::GetMillivolt(){
     return filter.GetLowPass();
 }

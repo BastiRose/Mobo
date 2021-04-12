@@ -6,6 +6,12 @@ void MowerMotorSystem::Setup(BatterySystem& batterySystem, CurrentSensor& curren
     this->mowerMotor = &mowerMotor;
 
     this->mowerMotor->Brake();
+
+    if(random(0,2) == 0){
+        SetDirection(MowerMotor_CCW);
+    } else {
+        SetDirection(MowerMotor_CW);
+    }
 }
 
 void MowerMotorSystem::Update(uint32_t now){
@@ -49,12 +55,16 @@ unsigned int MowerMotorSystem::GetMowerAmper(){
     return currentSensor->GetCurrent();
 }
 
-bool MowerMotorSystem::ChangeDirection(){
+void MowerMotorSystem::ChangeDirection(){
     if(direction == MowerMotor_CW)
         SetDirection(MowerMotor_CCW);
     else
         SetDirection(MowerMotor_CW);
 
+}
+
+MowerMotorDirection MowerMotorSystem::GetDirection(){
+    return direction;
 }
 
 void MowerMotorSystem::Beep(unsigned int time){

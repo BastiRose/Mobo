@@ -30,9 +30,10 @@
             isInside = sensor.isInside(0) && IsActive();
 
             if(isInside){
+                outsideTimer = millis();
+            } else {
                 isNear = true;
                 wasOverMax = false;
-                outsideTimer = millis();
             }
 
             if(lastInside != isInside){

@@ -33,18 +33,15 @@ void loop(){
         lps = counter;
         counter = 0;
         timer = millis();
-        
-        if(espReadyForUpdate){
-          UpdateESP();
-          espReadyForUpdate = false;
-        } 
+        espReadyForUpdate = true;
+        UpdateESP();
     }
 
     if(minuteCounter >= 60){
       timeActive++;
       minuteCounter = 0;
     }
-
+    
      CheckSerial();
 
     robot.Loop();
@@ -127,14 +124,22 @@ void UpdateESP(){
   Serial2.print(" Outside: ");
   Serial2.print(robot.BoundarySensor->TimeOutside() / 1000);
 
-  Serial2.print(" IMU: Roll: ");
+  Serial2.print(" | IMU: Roll: ");
   Serial2.print((int)robot.IMU->GetRoll());
   Serial2.print(" Pitch ");
   Serial2.print((int)robot.IMU->GetPitch());
   Serial2.print(" Yaw ");
   Serial2.print((int)robot.IMU->GetYaw());
 
-  Serial2.print(" Task: ");
+  Serial2.print(" | Mower Dir: ");
+  Serial2.print((int)robot.MowerMotor->GetDirection());
+
+  Serial2.print(" | Battery: Need Charging: ");
+  Serial2.print(robot.Battery->NeedCharging());
+  Serial2.print(" | Battery: Low: ");
+  Serial2.print(robot.Battery->IsLow());
+
+  Serial2.print(" | Task: ");
   Serial2.print((int)robot.Tasks->GetCurrentTaskType());
 
 
@@ -147,6 +152,7 @@ void UpdateESP(){
 
 TaskMow mowTask;
 TaskPause pauseTask;
+TaskStop stopTask;
 TaskGoHome goHomeTask;
 
 void CheckSerial(){
@@ -165,20 +171,25 @@ void CheckSerial(){
         }
 
         if(c == 's'){
-
-            robot.Tasks->CancleAllTasks();
-            robot.Tasks->AddTask(pauseTask);
-            Serial.println("COMMAND GO Stop");
+            if(robot.Tasks->IsCurrentTask(TaskPause::Type)){
+              robot.Tasks->CancleAllTasks();
+              robot.Tasks->AddTask(stopTask);
+              Serial.println("COMMAND GO Stop");
+            } else {
+              robot.Tasks->CancleAllTasks();
+              robot.Tasks->AddTask(pauseTask);
+              Serial.println("COMMAND GO Pause");
+            }
 
         }
 
         if(c == 'm'){
-
-            if(robot.Battery->IsReady()){
-              robot.Tasks->CancleAllTasks();
-              robot.Tasks->AddTask(mowTask);
-              Serial.println("COMMAND GO MOW");
-            }
+            mowTask.Setup(0, *robot.Battery);
+            robot.Tasks->CancleAllTasks();
+            robot.Tasks->AddTask(mowTask);
+            if(robot.Battery->IsCharging())
+              robot.Tasks->AddTask(goHomeTask);
+            Serial.println("COMMAND GO MOW");
         }
 
       if(c == 'u'){

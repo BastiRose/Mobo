@@ -23,6 +23,10 @@ void TaskManager::popCurrentTask(){
     Serial.println(MAX_TASKS);
 }
 
+ void TaskManager::Setup(Task& defaultTask){
+     this->defaultTask = &defaultTask;
+ }
+
 void TaskManager::Update(uint32_t now){
      if(taskCount == 0)
         return;
@@ -55,14 +59,14 @@ void TaskManager::CancleCurrentTasks(){
 
 bool TaskManager::IsCurrentTask(task_type_t type){
     if(taskCount == 0)
-        return false;
+        return  defaultTask->GetType() == type;
 
     return tasks[0]->GetType() == type;
 }
 
 task_type_t TaskManager::GetCurrentTaskType(){
     if(taskCount == 0)
-        return Task_None;
+        return defaultTask->GetType();
 
     return tasks[0]->GetType();
 }
@@ -70,5 +74,7 @@ task_type_t TaskManager::GetCurrentTaskType(){
 void TaskManager::StartCurrentTask(){
     if(taskCount != 0){
         tasks[0]->Start();
+    } else {
+        defaultTask->Start();
     }
 }
