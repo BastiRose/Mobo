@@ -11,6 +11,8 @@ class TaskManager : public Component
         Task* tasks[MAX_TASKS];
         Task* defaultTask;
 
+        unsigned long timeTaskStarted = 0;
+
         void popCurrentTask();
         
     public:
@@ -22,5 +24,6 @@ class TaskManager : public Component
         bool IsCurrentTask(task_type_t type);
         task_type_t GetCurrentTaskType();
         void StartCurrentTask();
+        unsigned long TimeInCurrentTask();
 };
 

@@ -166,7 +166,7 @@ void SetupRobot(Robot& robot){
 
     //Analog
     BattPin.Setup(A8, AnalogHandler, true);
-    LipoVoltageSensor.Setup(BattPin, 13.7f, 0.40, 250);
+    LipoVoltageSensor.Setup(BattPin, 13.8f, 0.40, 250);
 
     robot.AddComponent(BattPin);
     robot.AddComponent(LipoVoltageSensor);

@@ -5,9 +5,9 @@
 void StandardVoltageSensor::Setup(AnalogSensor& analogSensor, float maxVolt, float filterAlpha, unsigned int updateInterval){
     this->analogSensor = &analogSensor;
     this->updateInterval = updateInterval;
-    this->factor = (maxVolt * 1000) / 1023;
+    this->factor = (maxVolt * 1000) / 1024;
 
-    this->filter.Setup(filterAlpha, ((this->analogSensor->GetValue() * factor) / 100));
+    this->filter.Setup(filterAlpha, ((this->analogSensor->GetValue() * factor)));
 }
 
 void StandardVoltageSensor::Update(uint32_t now){

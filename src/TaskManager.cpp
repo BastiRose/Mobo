@@ -14,8 +14,10 @@ void TaskManager::popCurrentTask(){
 
     taskCount--;
 
-    if(taskCount > 0)
+    if(taskCount > 0){
         tasks[0]->Activate();
+        timeTaskStarted = millis();
+    }
 
     Serial.print(": ");
     Serial.print(taskCount);
@@ -43,9 +45,10 @@ void TaskManager::AddTask(Task& task){
     }
 
     tasks[taskCount] = &task;
-    if(taskCount == 0)
+    if(taskCount == 0){
         tasks[taskCount]->Activate();
-
+        timeTaskStarted = millis();
+    }
     taskCount++;
 }
 
@@ -77,4 +80,8 @@ void TaskManager::StartCurrentTask(){
     } else {
         defaultTask->Start();
     }
+}
+
+unsigned long TaskManager::TimeInCurrentTask(){
+    return millis() - timeTaskStarted;
 }

@@ -81,7 +81,7 @@ void UpdateESP(){
   Serial2.print('|');
   Serial2.print(lps);
   Serial2.print('|');
-  unsigned long x = 0;
+  unsigned long x = (robot.Tasks->TimeInCurrentTask() / 1000) / 60;
   Serial2.write((uint8_t *) &timeActive, sizeof(timeActive));
   Serial2.print('|');
   Serial2.write((uint8_t *) &x, sizeof(x));
