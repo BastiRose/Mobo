@@ -98,7 +98,7 @@ public:
 
                 //Turn
                 if(!wasInside){
-                    actionTurn.SetTargetAngle(abs(actionTurn.AngleTurned()) + random(30,91));
+                    actionTurn.SetTargetAngle(abs(actionTurn.AngleTurned()) + random(30,66));
                     lastInside = true;
                 }
 
@@ -108,9 +108,10 @@ public:
                 if(!robot->BoundarySensor->IsInside() && lastInside && robot->Movement->GetTimeInCurrentAction() > 1000){
                     lastInside = false;
                     direction *= -1;
+                    actionTurn.SetDirection(direction);
                 }
 
-                if(robot->BoundarySensor->IsInside() && !lastInside && robot->Movement->GetTimeInCurrentAction() > 500){
+                if(robot->BoundarySensor->IsInside() && !lastInside && robot->Movement->GetTimeInCurrentAction() > 1000){
                     robot->Movement->CancleAllActions();
                     robot->Movement->AddAction(actionBreak); 
                 }
@@ -121,6 +122,7 @@ public:
             if(abs(lastAngleTurned  - actionTurn.AngleTurned()) < 2){
                 tries++;
                 direction *= -1;
+                actionTurn.SetDirection(direction);
             }
             
             lastAngleTurned = actionTurn.AngleTurned();
