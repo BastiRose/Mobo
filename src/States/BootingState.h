@@ -27,6 +27,7 @@ public:
     void Setup(Robot& robot){
         this->robot = &robot;
         taskMowBoundary.Setup(*this->robot->IMU);
+
     }
 
     void Enter(){
@@ -41,7 +42,7 @@ public:
         if(millis() - timer >= 5000){
              counter = 0;
             if(robot->BoundarySensor->IsActive()){
-               this->done = true;
+                this->done = true;
 
                 if(!robot->Battery->IsCharging()){
                     //robot->Tasks->AddTask(taskMowBoundary);

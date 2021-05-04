@@ -509,6 +509,8 @@ protected:
     float wantedTarged = 0;
     float targed = 0;
 
+    bool didTurn = false;
+
     int8_t dir = 1;
 
     float pOut = 0;
@@ -517,17 +519,19 @@ protected:
     float errorSum = 0;
 
     float kp = 14;
-    float ki = 5.5;
+    float ki = 6;
     float kd = 0.5;
 
     float error = 0;
     float lastError = 0;
+    float lastErrorForDone = 0;
 
     float allowedError = 3;
 
     float dt = 0;
 
     unsigned long timer = 0;
+    unsigned long doneTimer = 0;
 
     bool exact = false;
     bool usePID = false;
@@ -583,16 +587,32 @@ protected:
     }
 
     void checkForStuckOrDone(){
-        if(abs(error - lastError) < 0.2 && (!exact || abs(error) <= allowedError) ){
-            counter++;
-            if(counter >= 100 || (!exact && abs(error) <= allowedError)){
+
+            if(abs(imu->GetHeadingError() - lastErrorForDone) > 2){
+                didTurn = true;
+            }
+
+            if( (abs(targed) + allowedError) < abs(wantedTarged))
+                return;
+
+            if(abs(imu->GetHeadingError() - lastErrorForDone) < 2){
+                counter++;
+            } else {
+                counter = 0;
+            }
+ 
+
+             if((didTurn && counter >= 203) || (!didTurn && counter >= 500) || (!exact && abs(error) <= allowedError)){
                 done = true; 
                 motorLeft->ChangeSpeed(0);
                 motorRight->ChangeSpeed(0);        
                 return;
             }
-        } else {
-            counter = 0;
+            
+
+       if(millis() - doneTimer > 1000){
+            lastErrorForDone = imu->GetHeadingError();
+            doneTimer = millis();
         }
     }
 
@@ -633,6 +653,7 @@ public:
     void Activate(){
         done = false;
         isActive = true;
+
         imu->SetHeading();
 
         timer = millis();
@@ -640,14 +661,17 @@ public:
         iOut = 0;
         pOut = 0;
         dOut = 0;
-
         errorSum = 0;
 
-        error = targed; 
+        error = 0; 
         lastError = 0;
+        lastErrorForDone = 0;
+
         dt = 0;
 
+        didTurn = false;
         counter = 0;
+
         targed = 0;
 
         currentSpeed = 0;
@@ -685,7 +709,7 @@ public:
         }
     }
 
-    int AngleTurned(){
+    float AngleTurned(){
         if(done)
            return targed;
         return (imu->GetHeadingError());

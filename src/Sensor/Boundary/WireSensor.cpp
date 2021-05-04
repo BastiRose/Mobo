@@ -46,9 +46,9 @@
 
     bool WireSensor::IsActive(){
 
-        if(sensor.getSmoothMagnitude(0) < 100){
+        if(sensor.getSmoothMagnitude(0) < 50){
 
-            if(millis() -  wireOffTimer >= 2000){
+            if(millis() -  wireOffTimer >= 3000){
                wireActive = false;
             }
 

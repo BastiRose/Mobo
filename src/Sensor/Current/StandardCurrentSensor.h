@@ -11,6 +11,7 @@ class StandardCurrentSensor : public CurrentSensor
         AnalogSensor* analogSensor;
         unsigned long lastUpdate = 0;
         unsigned int updateInterval = 0;
+        unsigned int currentValue = 0;
         long factor = 0;
 
     public:

@@ -83,7 +83,6 @@ class MotorCurrentSensing : public ObjectDetector{
                         counter++;
                         if(counter >= 10){
                             isTriggered = true;
-                            Serial.println("Trigger");
                         }
                         
                     } else {

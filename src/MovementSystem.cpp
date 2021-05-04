@@ -8,6 +8,7 @@ void MovementSystem::popAction(){
     Serial.print(actions[0]->GetID());
 
     actions[0]->Deactivate();
+    
     for(int i = 1; i < maxActions - 1; i++){
         actions[i - 1] = actions[i];
     }

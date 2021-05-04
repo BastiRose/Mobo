@@ -1,0 +1,105 @@
+Date : 2021-04-20 22:24:48
+Directory : q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src
+Total : 67 files,  3556 codes, 80 comments, 1245 blanks, all 4881 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C++      |         67 |      3,556 |         80 |      1,245 |      4,881 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                              | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                 |         67 |      3,556 |         80 |      1,245 |      4,881 |
+| Config                                                                                            |          1 |          0 |          0 |          3 |          3 |
+| Driver                                                                                            |          5 |        186 |          0 |         66 |        252 |
+| Sensor                                                                                            |         32 |      1,146 |          5 |        400 |      1,551 |
+| Sensor\AnalogSensor                                                                               |          3 |         33 |          0 |         11 |         44 |
+| Sensor\Boundary                                                                                   |          3 |        118 |          1 |         39 |        158 |
+| Sensor\Current                                                                                    |          3 |         48 |          0 |         17 |         65 |
+| Sensor\DigitalSensor                                                                              |          5 |         68 |          0 |         26 |         94 |
+| Sensor\Distance                                                                                   |          3 |         56 |          0 |         24 |         80 |
+| Sensor\IMU                                                                                        |         12 |        780 |          4 |        270 |      1,054 |
+| Sensor\IMU\Accelerometer                                                                          |          3 |        218 |          1 |         66 |        285 |
+| Sensor\IMU\Compass                                                                                |          3 |        218 |          1 |         67 |        286 |
+| Sensor\IMU\Gyro                                                                                   |          3 |        244 |          2 |         98 |        344 |
+| Sensor\Voltage                                                                                    |          3 |         43 |          0 |         13 |         56 |
+| States                                                                                            |         10 |        471 |         15 |        186 |        672 |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                          | language | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\BatterySystem.h                          | C++      |         75 |          0 |         24 |         99 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Component.h                              | C++      |         22 |          0 |          7 |         29 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Config\Config.h                          | C++      |          0 |          0 |          3 |          3 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Driver\MotorDriver.h                     | C++      |         16 |          0 |         10 |         26 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Driver\RN_VNH2.cpp                       | C++      |         63 |          0 |         17 |         80 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Driver\RN_VNH2.h                         | C++      |         22 |          0 |         15 |         37 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Driver\bts7960.cpp                       | C++      |         60 |          0 |         15 |         75 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Driver\bts7960.h                         | C++      |         25 |          0 |          9 |         34 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Helper.cpp                               | C++      |          1 |          0 |          6 |          7 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Helper.h                                 | C++      |          6 |          0 |          1 |          7 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Motor.cpp                                | C++      |         64 |          0 |         20 |         84 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Motor.h                                  | C++      |         27 |          0 |         11 |         38 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\MovementAction.h                         | C++      |        632 |          1 |        194 |        827 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\MovementSystem.cpp                       | C++      |         91 |          0 |         36 |        127 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\MovementSystem.h                         | C++      |         28 |          0 |         13 |         41 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\MowerMotorSystem.cpp                     | C++      |         60 |          0 |         16 |         76 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\MowerMotorSystem.h                       | C++      |         32 |          0 |         11 |         43 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\ObjectDetectionSystem.h                  | C++      |        122 |          0 |         36 |        158 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Robot.cpp                                | C++      |         34 |          0 |         15 |         49 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Robot.h                                  | C++      |         45 |          0 |         13 |         58 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\AnalogSensor\AnalogSensor.h       | C++      |          8 |          0 |          3 |         11 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\AnalogSensor\SimpleAnalogPin.cpp  | C++      |         12 |          0 |          5 |         17 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\AnalogSensor\SimpleAnalogPin.h    | C++      |         13 |          0 |          3 |         16 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Boundary\BoundarySensor.h         | C++      |         15 |          1 |          3 |         19 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Boundary\WireSensor.cpp           | C++      |         74 |          0 |         23 |         97 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Boundary\WireSensor.h             | C++      |         29 |          0 |         13 |         42 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Current\CurrentSensor.h           | C++      |         10 |          0 |          4 |         14 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Current\StandardCurrentSensor.cpp | C++      |         20 |          0 |          5 |         25 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Current\StandardCurrentSensor.h   | C++      |         18 |          0 |          8 |         26 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\DigitalSensor\AnalogToDigital.cpp | C++      |         12 |          0 |          5 |         17 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\DigitalSensor\AnalogToDigital.h   | C++      |         16 |          0 |          4 |         20 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\DigitalSensor\DigitalPin.cpp      | C++      |         16 |          0 |          9 |         25 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\DigitalSensor\DigitalPin.h        | C++      |         16 |          0 |          5 |         21 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\DigitalSensor\DigitalSensor.h     | C++      |          8 |          0 |          3 |         11 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Distance\DistanceSensor.h         | C++      |          9 |          0 |          5 |         14 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Distance\HC_SR04.cpp              | C++      |         29 |          0 |         11 |         40 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Distance\HC_SR04.h                | C++      |         18 |          0 |          8 |         26 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Accelerometer\ADXL345.cpp     | C++      |        116 |          0 |         47 |        163 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Accelerometer\ADXL345.h       | C++      |         89 |          0 |         15 |        104 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Accelerometer\Accelerometer.h | C++      |         13 |          1 |          4 |         18 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Compass\Compass.h             | C++      |         10 |          1 |          3 |         14 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Compass\HMC5883L.cpp          | C++      |        137 |          0 |         49 |        186 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Compass\HMC5883L.h            | C++      |         71 |          0 |         15 |         86 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\GY80.cpp                      | C++      |         50 |          0 |         16 |         66 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\GY80.h                        | C++      |         36 |          0 |         15 |         51 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Gyro\Gyro.h                   | C++      |         11 |          0 |          8 |         19 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Gyro\L3G4200D.cpp             | C++      |        144 |          2 |         58 |        204 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\Gyro\L3G4200D.h               | C++      |         89 |          0 |         32 |        121 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\IMU\IMU.h                         | C++      |         14 |          0 |          8 |         22 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Voltage\StandardVoltageSensor.cpp | C++      |         18 |          0 |          5 |         23 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Voltage\StandardVoltageSensor.h   | C++      |         16 |          0 |          6 |         22 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Sensor\Voltage\VoltageSensor.h           | C++      |          9 |          0 |          2 |         11 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\SetupMoboOne.h                           | C++      |        294 |         59 |        103 |        456 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\SetupMoboTwo.h                           | C++      |          1 |          0 |          0 |          1 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\AvoidBackState.h                  | C++      |         43 |          1 |         14 |         58 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\AvoidTurnState.h                  | C++      |        105 |          3 |         38 |        146 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\BootingState.h                    | C++      |         60 |          1 |         23 |         84 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\CruiseState.h                     | C++      |         52 |          9 |         22 |         83 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\DockingState.h                    | C++      |         52 |          0 |         19 |         71 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\ErrorState.h                      | C++      |         26 |          1 |         12 |         39 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\ExitDockState.h                   | C++      |         44 |          0 |         17 |         61 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\FollowBoundaryState.h             | C++      |         32 |          0 |         12 |         44 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\PrepareMowingState.h              | C++      |         34 |          0 |         18 |         52 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\States\SleepState.h                      | C++      |         23 |          0 |         11 |         34 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\TaskManager.cpp                          | C++      |         67 |          0 |         20 |         87 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\TaskManager.h                            | C++      |         23 |          0 |          7 |         30 |
+| q:\Projects\Arduino Projects\Mobo\Code\Firmware\Mobo\src\Tasks.h                                  | C++      |        129 |          0 |         57 |        186 |
+| Total                                                                                             |          |      3,556 |         80 |      1,245 |      4,881 |
++---------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

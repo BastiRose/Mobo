@@ -33,51 +33,54 @@ void loop(){
         lps = counter;
         counter = 0;
         timer = millis();
+       if(espReadyForUpdate)
+         UpdateESP();
+      else
         espReadyForUpdate = true;
-        UpdateESP();
     }
 
     if(minuteCounter >= 60){
       timeActive++;
       minuteCounter = 0;
     }
-    
-     CheckSerial();
+
+    CheckSerial();
 
     robot.Loop();
     counter++;
 }
 
 void UpdateESP(){
-  
+  espReadyForUpdate = false;
+  Serial2.flush();
   Serial2.print('U');
   Serial2.print('|');
   Serial2.print('M');
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(MotorLeft.GetSpeed());
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(CurrentSensorMotorLeft.GetCurrent() / 100);
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(MotorLeftSensing.Ckeck());
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(MotorRight.GetSpeed());
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(CurrentSensorMotorRight.GetCurrent() / 100);
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(MotorRightSensing.Ckeck());
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(MotorMower.GetSpeed());
   Serial2.print('#');
 
   Serial2.print('S');
   Serial2.print('|');
-  Serial2.print(0);
+  Serial2.print(robot.Tasks->GetCurrentTaskType());
   Serial2.print('|');
   Serial2.print(robot.Battery->GetMillivoltage());
   Serial2.print('|');
   Serial2.print(robot.Battery->IsCharging()); //dock
   Serial2.print('|');
-  Serial2.print(0); //switch
+  Serial2.print(EmergencyButton.IsActive()); //switch
   Serial2.print('|');
   Serial2.print(lps);
   Serial2.print('|');
@@ -95,7 +98,7 @@ void UpdateESP(){
   Serial2.print('R');
   Serial2.print('|');
   if(robot.ObjectDetection->HasObjectDetected())
-    Serial2.print(robot.ObjectDetection->GetClosestObject().Distance);
+    Serial2.print(UsSensor.GetDistance());
   else
     Serial2.print(0);
   Serial2.print('#');
@@ -121,8 +124,6 @@ void UpdateESP(){
   Serial2.print(robot.BoundarySensor->IsNear());
   Serial2.print(" In Out: ");
   Serial2.print(robot.BoundarySensor->LastTimePassedBoundary() / 1000);
-  Serial2.print(" Outside: ");
-  Serial2.print(robot.BoundarySensor->TimeOutside() / 1000);
 
   Serial2.print(" | IMU: Roll: ");
   Serial2.print((int)robot.IMU->GetRoll());
@@ -160,6 +161,7 @@ void CheckSerial(){
     char c = Serial2.read();
 
     if(c == '('){
+        delay(5);
         char c = Serial2.read();
 
         if(c == 'g'){

@@ -32,10 +32,10 @@ public:
     }
 
     void Enter(){
+        robot->Movement->CancleAllActions();
+
         actionTurn.SetDirection(0);
         actionTurn.SetTargetAngle(random(45, 120));
-
-        robot->Movement->CancleAllActions();
         robot->Movement->AddAction(actionStop);
         robot->Movement->AddAction(actionBackwards);
         robot->Movement->AddAction(actionTurn);

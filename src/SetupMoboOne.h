@@ -126,7 +126,7 @@ void SetupRobot(Robot& robot){
     MotorLeftCurrentPin.Setup(A1, AnalogHandler, true);
     CurrentSensorMotorLeft.Setup(MotorLeftCurrentPin,7.58f, 0.85, 250);
     MotorDriverLeft.Setup(22,23,9);
-    MotorLeft.Setup(MotorDriverLeft, 255, 1000, 1800);
+    MotorLeft.Setup(MotorDriverLeft, 255, 1000, 1600);
 
     robot.AddComponent(MotorLeftCurrentPin);
     robot.AddComponent(CurrentSensorMotorLeft);
@@ -151,7 +151,7 @@ void SetupRobot(Robot& robot){
     MotorDriverMower.Setup(28,29,11,12);
     MotorMowerCurrentPin.Setup(A2, AnalogHandler, true);
     CurrentSensorMotorMower.Setup(MotorMowerCurrentPin, 0.2, 0.80, 200);
-    MotorMower.Setup(MotorDriverMower, 255, 10000, 1500);
+    MotorMower.Setup(MotorDriverMower, 255, 10000, 1520);
 
     robot.AddComponent(MotorDriverMower);
     robot.AddComponent(MotorMower);
@@ -182,9 +182,9 @@ void SetupRobot(Robot& robot){
     robot.AddComponent(EmergencyButton);
     
     //Object Detection
-    USDetector.Setup(UsSensor, 45, 0);
-    MotorLeftSensing.Setup(Battery, CurrentSensorMotorLeft, MotorLeft, 80);
-    MotorRightSensing.Setup(Battery, CurrentSensorMotorRight, MotorRight, 80);
+    USDetector.Setup(UsSensor, 50, 0);
+    MotorLeftSensing.Setup(Battery, CurrentSensorMotorLeft, MotorLeft, 77);
+    MotorRightSensing.Setup(Battery, CurrentSensorMotorRight, MotorRight, 77);
 
     ObjectDetection.AddDetector(USDetector);
     ObjectDetection.AddDetector(MotorLeftSensing);
@@ -228,10 +228,10 @@ void setupStates(Robot& robot){
     auto ConditionToError = [] (Robot& robot) -> bool{
         return  (
                     robot.Battery->IsCritical() ||
-                    abs(robot.IMU->GetRoll()) > 45 || 
-                    abs(robot.IMU->GetPitch()) > 45 || 
-                    robot.MainStateMachine.currentState->timeInState > 120000L ||
+                    abs(robot.IMU->GetRoll()) >= 30 || 
+                    abs(robot.IMU->GetPitch()) >= 30 || 
                     !robot.BoundarySensor->IsActive() ||
+                    robot.BoundarySensor->TimeOutside() > 10000 ||
                     robot.Tasks->IsCurrentTask(TaskStop::Type)
                 );
     };
@@ -246,7 +246,7 @@ void setupStates(Robot& robot){
     #################################################
     */
     auto ConditionBootingToError = [] (Robot& robot) -> bool{
-        return !robot.Battery->IsCharging() && !robot.BoundarySensor->IsInside() && robot.MainStateMachine.currentState->timeInState > 5000;
+        return !robot.Battery->IsCharging() && !robot.BoundarySensor->IsInside() && robot.MainStateMachine.currentState->timeInState > 4000;
     };
 
     StateTransition BootingTransitions[] = {
@@ -288,9 +288,14 @@ void setupStates(Robot& robot){
         return robot.Tasks->IsCurrentTask(TaskPause::Type) && robot.BoundarySensor->IsInside();
     };
 
+    auto ConditionCruseToError = [] (Robot& robot) -> bool{
+        return robot.MainStateMachine.currentState->failed;
+    };
+
 
     StateTransition CruiseTransitions[] = {
         {&MoboErrorState, ConditionToError},
+        {&MoboErrorState, ConditionCruseToError},
         {&MoboDockingSate, ConditionInDock},
         {&MoboFollowBoundaryState, ConditionCruiseToFollowBoundary},
         {&MoboAvoidTurnSate, ConditionCruiseToAvoidTurn},
@@ -402,7 +407,6 @@ void setupStates(Robot& robot){
     #################################################
     */
     StateTransition ExitDockTransitions[] = {
-        {&MoboErrorState, ConditionToError},
         {&MoboPrepareMowingState, ConditionStateDone}
     };
 
@@ -417,18 +421,22 @@ void setupStates(Robot& robot){
     auto ConditionTaskAndInDock = [] (Robot& robot) -> bool{
         return  (robot.Tasks->IsCurrentTask(TaskMow::Type) || 
                 robot.Tasks->IsCurrentTask(TaskMowBoundary::Type)) && 
-                robot.Battery->IsCharging() && !Battery.NeedCharging();
+                robot.Battery->IsCharging() && !Battery.NeedCharging() &&
+                robot.BoundarySensor->IsActive();
     };
 
     auto ConditionTaskAndNotInDock = [] (Robot& robot) -> bool{
         return  (robot.Tasks->IsCurrentTask(TaskMow::Type) || 
                 robot.Tasks->IsCurrentTask(TaskMowBoundary::Type)) && 
-                !robot.Battery->IsCharging();
+                !robot.Battery->IsCharging() && !Battery.NeedCharging() &&
+                robot.BoundarySensor->IsActive();
     };
 
     auto ConditionTaskAndNotInDockGoHome = [] (Robot& robot) -> bool{
         return  robot.Tasks->IsCurrentTask(TaskGoHome::Type) && 
-                !robot.Battery->IsCharging();
+                !robot.Battery->IsCharging() && 
+                robot.MainStateMachine.currentState->timeInState < 5000 &&
+                robot.BoundarySensor->IsActive();
     };
 
     StateTransition SleepTransitions[] = {

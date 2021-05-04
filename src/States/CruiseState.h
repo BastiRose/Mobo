@@ -12,14 +12,14 @@ private:
     Robot* robot;
 
     MovementActionForward actionForward;
-    MovementActionStop actionStop;
-    MovementActionCurve actionCurve;
 
     bool headingSetted = false;
 
     unsigned long timer = 0;
-    float lastAngleError = 0;
 
+    unsigned long maxTimeToBoundary = 30000;
+
+    int counter = 0;
 
 
 public:
@@ -30,10 +30,6 @@ public:
     void Setup(Robot& robot){
         this->robot = &robot;
         actionForward.Setup(255, *this->robot->IMU);
-        actionCurve.Setup(255,  *this->robot->IMU);
-
-        actionStop.SetDuration(100);
-        actionStop.SetWaitForMotorStoped(true);
     }
 
     void Enter(){
@@ -44,8 +40,6 @@ public:
         robot->Movement->AddAction(actionForward);
         headingSetted = false;
 
-        actionCurve.SetDir(0);
-        actionCurve.SetTarget(45);
         timer = millis();
         
     }
@@ -58,7 +52,7 @@ public:
              timer = millis();
         }   
 
-        if(abs(actionForward.GetError()) < 150){
+        if(abs(actionForward.GetError()) < 125){
             timer = millis();
         }
 
@@ -66,18 +60,22 @@ public:
             done = true;
         }
 
-        /*if(robot->ObjectDetection->HasObjectDetected() && robot->ObjectDetection->GetClosestObject().Distance < 35){
-            actionCurve.SetDegPerSec( 40 - ((30 / 35) * robot->ObjectDetection->GetClosestObject().Distance));
-
-            if(!robot->Movement->IsCurrentAction(actionCurve)){
-                robot->Movement->CancleAllActions();
-                robot->Movement->AddAction(actionCurve);
-                robot->Movement->AddAction(actionForward);
-            }
-        }*/
+        if(timeInState > maxTimeToBoundary * 1.3f){
+            done = true;
+            counter++;
+        }
     }
 
     void Exit(){
+        if(!robot->BoundarySensor->IsInside()){
+            counter = 0;
+            if(maxTimeToBoundary < timeInState)
+                maxTimeToBoundary = timeInState;
+        }
+
+        if(counter >= 3)
+            failed = true;
+
         robot->Movement->CancleAllActions();
     }
 };
